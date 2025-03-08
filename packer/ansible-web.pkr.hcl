@@ -30,8 +30,8 @@ source "amazon-ebs" "ubuntu" {
     most_recent = true
   }
   # communicator = "ssh"  
-  ssh_username =  var.ssh_username
-  
+  ssh_username = var.ssh_username
+
   # ssh_interface        = "session_manager"
   # iam_instance_profile = var.instance_role
 }
@@ -59,6 +59,6 @@ build {
     playbook_file    = "../ansible/playbook.yml"
     user             = var.ssh_username
     ansible_env_vars = ["ANSIBLE_HOST_KEY_CHECKING=False"]
-    use_proxy         = false
+    use_proxy        = false
   }
 }

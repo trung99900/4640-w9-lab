@@ -26,8 +26,9 @@ Navigate to the root directory and run the following commands to build the custo
 ```bash
 
 packer init .
-Validate the Packer Configuration
-packer build ansible-web.pkr.hcl
+packer fmt .
+packer validate . 
+packer build .
 ```
 
 This will create an AMI named `packer-ansible-nginx` in your AWS account.
@@ -38,7 +39,10 @@ Navigate to the root directory and run the following commands to deploy the EC2 
 
 ```bash
 terraform init
-terraform apply
+terraform fmt
+terraform validate
+terraform plan -out 4640-lab09
+terraform apply 4640-lab09
 ```
 
 ### 3. Destroy Terraform Resources
