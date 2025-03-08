@@ -29,7 +29,7 @@ source "amazon-ebs" "ubuntu" {
     owners      = ["099720109477"]
     most_recent = true
   }
-  communicator = "ssh"  
+  # communicator = "ssh"  
   ssh_username =  var.ssh_username
   
   # ssh_interface        = "session_manager"
@@ -45,19 +45,20 @@ build {
   name    = "packer-ansible-nginx"
   sources = ["source.amazon-ebs.ubuntu"]
 
-  provisioner "shell" {
-    inline = [
-      "echo installing ansible",
-      "sudo apt update",
-      "sudo apt install software-properties-common",
-      "sudo add-apt-repository --yes --update ppa:ansible/ansible",
-      "sudo apt install -y ansible",
-    ]
-  }
+  # provisioner "shell" {
+  #   inline = [
+  #     "echo installing ansible",
+  #     "sudo apt update",
+  #     "sudo apt install software-properties-common",
+  #     "sudo add-apt-repository --yes --update ppa:ansible/ansible",
+  #     "sudo apt install -y ansible",
+  #   ]
+  # }
 
   provisioner "ansible" {
-    playbook_file    = "./ansible/playbook.yml"
+    playbook_file    = "../ansible/playbook.yml"
     user             = var.ssh_username
     ansible_env_vars = ["ANSIBLE_HOST_KEY_CHECKING=False"]
+    use_proxy         = false
   }
 }
