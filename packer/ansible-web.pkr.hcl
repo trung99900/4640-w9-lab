@@ -3,14 +3,14 @@ packer {
     # COMPLETE ME
     # add necessary plugins for ansible and aws
     amazon = {
-      version = ">= 1.1.2"
+      version = ">= 1.3"
       source  = "github.com/hashicorp/amazon"
     }
     ansible = {
       version = ">= 1.1.2"
       source  = "github.com/hashicorp/ansible"
     }
-}
+  }
 }
 
 source "amazon-ebs" "ubuntu" {
@@ -21,18 +21,19 @@ source "amazon-ebs" "ubuntu" {
   instance_type = "t2.micro"
 
   source_ami_filter {
-      filters = {
-          name                = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-20250115"
-          virtualization-type = "hvm"
-          root-device-type    = "ebs"
-      }
-      owners      = [ "099720109477" ]
-      most_recent =  true
+    filters = {
+      name                = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-20250115"
+      virtualization-type = "hvm"
+      root-device-type    = "ebs"
+    }
+    owners      = ["099720109477"]
+    most_recent = true
   }
-  communicator         = "ssh"
-  ssh_username         = "ubuntu"
-  ssh_interface        = "session_manager"
-  iam_instance_profile = var.instance_role
+  communicator = "ssh"  
+  ssh_username =  var.ssh_username
+  
+  # ssh_interface        = "session_manager"
+  # iam_instance_profile = var.instance_role
 }
 
 build {
@@ -41,12 +42,22 @@ build {
   # - use the source image specified above
   # - use the "ansible" provisioner to run the playbook in the ansible directory
   # - use the ssh user-name specified in the "variables.pkr.hcl" file
-  name = "packer-ansible-nginx"
+  name    = "packer-ansible-nginx"
   sources = ["source.amazon-ebs.ubuntu"]
 
+  provisioner "shell" {
+    inline = [
+      "echo installing ansible",
+      "sudo apt update",
+      "sudo apt install software-properties-common",
+      "sudo add-apt-repository --yes --update ppa:ansible/ansible",
+      "sudo apt install -y ansible",
+    ]
+  }
+
   provisioner "ansible" {
-    playbook_file = "./ansible/playbook.yml"
-    user          = var.ssh_username
+    playbook_file    = "./ansible/playbook.yml"
+    user             = var.ssh_username
     ansible_env_vars = ["ANSIBLE_HOST_KEY_CHECKING=False"]
   }
 }
